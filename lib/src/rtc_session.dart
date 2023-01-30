@@ -345,7 +345,7 @@ class RTCSession extends EventManager implements Owner {
       [Function(RTCSession)? initCallback]) {
     logger.d('init_incoming()');
 
-    _w2cCallMe = request.getHeader('X-w2c-call-me');
+    _w2cCallMe = request.getHeader('X-w2c-c2c-id');
     int? expires;
     String? contentType = request.getHeader('Content-Type');
 
