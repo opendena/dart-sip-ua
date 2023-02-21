@@ -576,7 +576,6 @@ class Call {
       'id': id
       , 'sessionId': _session.id
       , 'sessionStatus': _session.status
-      , 'sessionTerminatedCode': _session.TerminatedCode
       , 'sessionContact': _session.contact
       , 'sessionDirection': _session.direction
       , 'sessionW2cC2CId': _session.w2cC2CId ?? ''
