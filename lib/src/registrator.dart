@@ -120,6 +120,11 @@ class Registrator {
     _contact = contact.toString();
   }
 
+  // Call-ID and CSeq are shared by the whole REGISTER family (RFC3261 10.2),
+  // and responses whose CSeq no longer matches _cseq are discarded below. An
+  // authentication retry bumps _cseq on its own, so a register() and an
+  // unregister() in flight at the same time desynchronize the counter and their
+  // responses are silently dropped: those two must never overlap.
   void register() {
     if (_registering) {
       logger.d('Register request in progress...');
@@ -236,10 +241,13 @@ class Registrator {
                 contact.getParam('pub-gruu').replaceAll('"', '');
           }
 
-          if (!_registered) {
-            _registered = true;
-            _ua.registered(response: event.response);
-          }
+          // Emitted on every successful REGISTER, not only on the
+          // unregistered -> registered transition: consumers gate on the 200 OK
+          // of the REGISTER they just triggered (a binding is an ephemeral
+          // routing hint), and a refresh has to be observable. Listeners must
+          // be idempotent, they also get one per automatic refresh.
+          _registered = true;
+          _ua.registered(response: event.response);
         } else
         // Interval too brief RFC3261 10.2.8.
         if (status_code.contains(RegExp(r'^423$'))) {
